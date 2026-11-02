@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<html lang="en" ng-app="lensCraftApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lens Craft Photography</title>
+
+    <script src="https://code.angularjs.org/1.6.9/angular.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f0eb;
+            color: #292929;
+        }
+
+        header {
+            background: #171717;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            letter-spacing: 3px;
+        }
+
+        nav {
+            background: #a66b43;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 12px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #ffe0bd;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        h2, h3 {
+            color: #8c542f;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            background: #a66b43;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #754526;
+        }
+
+        .delete {
+            background: #b23b3b;
+        }
+
+        .card {
+            background: #f7f2ed;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 7px;
+            border-left: 5px solid #a66b43;
+        }
+
+        .result {
+            background: #f7f2ed;
+            padding: 18px;
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            border-left: 5px solid #a66b43;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .photo {
+            background: #f7f2ed;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            border-bottom: 4px solid #a66b43;
+            overflow-wrap: anywhere;
+        }
+
+        .photo span {
+            font-size: 35px;
+        }
+
+        footer {
+            background: #171717;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 35px;
+        }
+
+        @media (max-width: 500px) {
+            header h1 {
+                font-size: 23px;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body ng-controller="lensCtrl">
+
+    <header>
+        <h1>LENS CRAFT PHOTOGRAPHY</h1>
+        <p>Capturing Moments, Creating Memories</p>
+    </header>
+
+    <nav>
+        <a href="#reviews">Reviews</a>
+        <a href="#calculator">Packages</a>
+        <a href="#gallery">Gallery</a>
+    </nav>
+
+    <!-- PHOTOGRAPHY REVIEWS -->
+    <section class="container" id="reviews">
+        <h2>Photography Review Box</h2>
+        <p>Share your experience with our photography services.</p>
+
+        <textarea ng-model="review"
+                  placeholder="Write your review here..."></textarea>
+
+        <button ng-click="addReview()">Post Review</button>
+
+        <h3>Customer Reviews ({{reviews.length}})</h3>
+
+        <p ng-if="reviews.length == 0">
+            No reviews yet. Be the first to share!
+        </p>
+
+        <div class="card"
+             ng-repeat="r in reviews track by $index">
+            <p>{{r}}</p>
+            <button class="delete"
+                    ng-click="deleteReview($index)">
+                Delete
+            </button>
+        </div>
+    </section>
+
+    <!-- PHOTOGRAPHY PACKAGE CALCULATOR -->
+    <section class="container" id="calculator">
+        <h2>Photography Package Cost Calculator</h2>
+        <p>Calculate package prices and other amounts.</p>
+
+        <label>First Amount (₹)</label>
+        <input type="number"
+               ng-model="a"
+               placeholder="Enter first amount">
+
+        <label>Operation</label>
+        <select ng-model="op">
+            <option value="+">Addition (+)</option>
+            <option value="-">Subtraction (-)</option>
+            <option value="*">Multiplication (*)</option>
+            <option value="/">Division (/)</option>
+        </select>
+
+        <label>Second Amount (₹)</label>
+        <input type="number"
+               ng-model="b"
+               placeholder="Enter second amount">
+
+        <div class="result">
+            Result: {{calculate()}}
+        </div>
+    </section>
+
+    <!-- PHOTOGRAPHY GALLERY -->
+    <section class="container" id="gallery">
+        <h2>Photography Gallery List</h2>
+        <p>Add your favourite photography categories.</p>
+
+        <input type="text"
+               ng-model="category"
+               placeholder="Enter photography category">
+
+        <button ng-click="addCategory()">Add Category</button>
+
+        <h3>Gallery Categories ({{categories.length}})</h3>
+
+        <p ng-if="categories.length == 0">
+            No categories added yet.
+        </p>
+
+        <div class="gallery">
+            <div class="photo"
+                 ng-repeat="c in categories track by $index">
+                <span>📷</span>
+                <h3>{{c}}</h3>
+                <p>Lens Craft Photography Collection</p>
+                <button class="delete"
+                        ng-click="deleteCategory($index)">
+                    Remove
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Lens Craft Photography</p>
+        <p>Explore. Capture. Create.</p>
+    </footer>
+
+    <script>
+        angular.module("lensCraftApp", [])
+        .controller("lensCtrl", function($scope) {
+
+            // Review section
+            $scope.reviews = [];
+
+            $scope.addReview = function() {
+                if ($scope.review && $scope.review.trim()) {
+                    $scope.reviews.push($scope.review.trim());
+                    $scope.review = "";
+                }
+            };
+
+            $scope.deleteReview = function(index) {
+                $scope.reviews.splice(index, 1);
+            };
+
+            // Package calculator
+            $scope.op = "+";
+
+            $scope.calculate = function() {
+                if ($scope.a == null || $scope.b == null) {
+                    return "Enter both amounts";
+                }
+
+                if ($scope.op == "+") {
+                    return $scope.a + $scope.b;
+                }
+
+                if ($scope.op == "-") {
+                    return $scope.a - $scope.b;
+                }
+
+                if ($scope.op == "*") {
+                    return $scope.a * $scope.b;
+                }
+
+                if ($scope.op == "/") {
+                    if ($scope.b == 0) {
+                        return "Cannot divide by zero";
+                    }
+                    return $scope.a / $scope.b;
+                }
+            };
+
+            // Gallery section
+            $scope.categories = [
+                "Wedding Photography",
+                "Nature Photography",
+                "Portrait Photography"
+            ];
+
+            $scope.addCategory = function() {
+                if ($scope.category && $scope.category.trim()) {
+                    $scope.categories.push($scope.category.trim());
+                    $scope.category = "";
+                }
+            };
+
+            $scope.deleteCategory = function(index) {
+                $scope.categories.splice(index, 1);
+            };
+
+        });
+    </script>
+
+</body>
+</html>
